@@ -79,18 +79,20 @@ fun calcularSueldo(
         return sueldo * (100/tasa) * bonoEspecial
     }
 }
+//***********CLASES**********//
+//JAVA
 abstract class NumerosJava{
     protected val numeroUno:Int
     private val numeroDos: Int
-    constructor(
-        uno:Int,
-        dos:Int
-    ){
+    
+    constructor(uno:Int,dos:Int){
         this.numeroUno = uno
         this.numeroDos = dos
         println("Inicializando")
     }
 }
+
+
 abstract class Numeros( // Constructor Primario
     // Caso 1) Parametro normal
     // uno:Int , (parametro (sin modificador acceso))
@@ -107,6 +109,7 @@ abstract class Numeros( // Constructor Primario
         println("Inicializando")
     }
 }
+
 class Suma( // Constructor primario
     unoParametro: Int, // Parametro
     dosParametro: Int, // Parametros
