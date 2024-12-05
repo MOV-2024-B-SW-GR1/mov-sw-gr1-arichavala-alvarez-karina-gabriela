@@ -1,4 +1,5 @@
 import java.util.*
+import kotlin.collections.ArrayList
 
 fun main(args: Array<String>) {
     // INMUTABLES (No se RE ASIGNA "=")
@@ -71,6 +72,89 @@ fun main(args: Array<String>) {
     println(Suma.pi)
     println(Suma.elevarAlCuadrado(2))
     println(Suma.historialSumas)
+
+    /*
+    Semana 7
+    *14/11/2024
+    Tema: Arreglos
+    */
+
+    //inicio
+    //--
+    val arregloEstatico: Array<Int> = arrayOf<Int>(1,2,3)
+    println(arregloEstatico);
+
+    // Dinamicos
+    val arregloDinamico: ArrayList<Int> = arrayListOf<Int>(
+        1,2,3,4,5,6,7,8,9,10
+    )
+
+    val arregloNuevo : ArrayList<Char> = arrayListOf<Char>('a','b')
+
+    println(arregloDinamico)
+    arregloDinamico.add(11)
+    arregloDinamico.add(12)
+    println(arregloDinamico)
+    println(arregloNuevo)
+
+    //--
+    // For each = > Unit
+    // Iterar un arreglo
+    val respuestaForEach: Unit = arregloDinamico
+        .forEach { valorActual: Int ->
+            println("valorActual: $valorActual");
+        }
+
+    // "it" (en ingles "eso") significa el elemento iterado
+    arregloDinamico.forEach { println( "Valor Actual (it): ${it}")}
+
+    // Map -> Muta (Modifica cambio) el arreglo
+    // 1. enviamos el nuevo valor a la iteracion
+    // 2. nos devuelve un nuevo Arreglo con valores
+    // de las iteracionnes
+    val respuestaMap:List<Double> = arregloDinamico
+        .map {valorActual: Int ->
+            return@map valorActual.toDouble() + 100.00
+        }
+    println("Map 1 " + respuestaMap)
+
+    val respuestaMapDos = arregloDinamico.map { it + 15 }
+    println("Map 2: " + respuestaMapDos)
+
+    //--
+    // Filter -> filtrar el arreglo
+    // 1) Devolver una expresion (true o false)
+    // 2) nuevo arreglo filtrado
+    val respuestaFilter: List<Int> = arregloDinamico
+        .filter { valorActual: Int ->
+            //expresion o condicion
+            val mayoresACinco: Boolean = valorActual > 5
+            return@filter mayoresACinco
+        }
+
+    val respuestaFilterDos = arregloDinamico.filter{ it <= 5}
+    println("FILTER: "+respuestaFilter)
+    println(respuestaFilterDos)
+
+    // OR -> ANY (Alguno cumple?)
+    // AND → ALL? (Todos cumplen?)
+
+    val respuestaAny: Boolean = arregloDinamico
+        .any { valorActual: Int ->
+            return@any (valorActual > 5)
+        }
+
+    println("ANY: " + respuestaAny)
+
+    // AND → ALL (TODOS JUNTOS?)
+    println(respuestaAny) // true
+    val respuestaAll: Boolean = arregloDinamico
+        .all { valorActual: Int ->
+            return@all (valorActual > 5)
+        }
+    println(respuestaAll) // false
+
+    //fin
 }
 
 //Funciones
@@ -199,9 +283,4 @@ class Suma( unoParametro: Int, dosParametro: Int): Numeros(unoParametro, dosPara
             historialSumas.add(valorTotalSuma)
         }
     }
-
-
-
-
-
 }
