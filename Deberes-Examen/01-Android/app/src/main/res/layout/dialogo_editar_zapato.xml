@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFDEE6"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Campo para la marca del zapato -->
+    <EditText
+        android:id="@+id/edit_marca"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="Marca"
+        android:inputType="text" />
+
+    <!-- Campo para la talla del zapato -->
+    <EditText
+        android:id="@+id/edit_talla"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="Talla"
+        android:inputType="number" />
+
+    <!-- Campo para el precio del zapato -->
+    <EditText
+        android:id="@+id/edit_precio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="Precio"
+        android:inputType="numberDecimal" />
+
+</LinearLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="saludo">Pantalla landscape ingles</string>
+    <color name="saludo_color">#1E2E76</color>
+    <color name="background_color">#8BD7FB</color>
+</resources>
