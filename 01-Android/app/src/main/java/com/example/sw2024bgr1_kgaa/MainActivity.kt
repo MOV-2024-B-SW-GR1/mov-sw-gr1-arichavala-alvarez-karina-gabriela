@@ -13,9 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.snackbar.Snackbar
 
-
 class MainActivity : AppCompatActivity() {
-
     fun mostrarSnackbar(texto:String){
         val snack = Snackbar.make(
             findViewById(R.id.main_ciclo_vida),
@@ -62,7 +60,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -72,12 +69,14 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        // Inicializar BDD
+        EBaseDeDatos.tablaEntrenador = ESqliteHelperEntrenador(this)
+
 
         val botonCicloVida = findViewById<Button>(R.id.cl_ciclo_vida)
         botonCicloVida
-            .setOnClickListener{
+            .setOnClickListener {
                 irActividad(ACicloVida::class.java)
-
             }
 
         val botonListView = findViewById<Button>(R.id.btn_ir_list_view)
@@ -85,6 +84,7 @@ class MainActivity : AppCompatActivity() {
             .setOnClickListener {
                 irActividad(BListView::class.java)
             }
+
 
         val botonImplicito = findViewById<Button>(R.id.btn_ir_intent_implicito)
         botonImplicito
@@ -105,11 +105,32 @@ class MainActivity : AppCompatActivity() {
                 intentExplicito.putExtra("nombre", "Adrian")
                 intentExplicito.putExtra("apellido", "Eguez")
                 intentExplicito.putExtra("edad", 34)
+                intentExplicito.putExtra("entrenador",
+                    BEntrenador(1,"Adrian","Ejemplo")
+                )
                 callbackContenidoIntentExplicito.launch(intentExplicito)
-
             }
-    }
 
+        val botonIrSqlite = findViewById<Button>(R.id.btn_sqlite)
+        botonIrSqlite
+            .setOnClickListener {
+                irActividad(ECrudEntrenador::class.java)
+            }
+
+        val botonRecylerView = findViewById<Button>(R.id.btn_recycler_view)
+        botonRecylerView
+            .setOnClickListener {
+                irActividad(FRecyclerView::class.java)
+            }
+
+        val botonGMaps = findViewById<Button>(R.id.btn_google_maps)
+        botonGMaps
+            .setOnClickListener {
+                irActividad(GGoogleMaps::class.java)
+            }
+
+
+    }
     fun irActividad(clase:Class<*>){
         startActivity(Intent(this, clase))
     }

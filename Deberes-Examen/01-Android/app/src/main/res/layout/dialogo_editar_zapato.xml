@@ -24,6 +24,15 @@
         android:hint="Talla"
         android:inputType="number" />
 
+    <!-- Campo para el color del zapato -->
+    <EditText
+        android:id="@+id/edit_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="Color"
+        android:inputType="text" />
+
     <!-- Campo para el precio del zapato -->
     <EditText
         android:id="@+id/edit_precio"

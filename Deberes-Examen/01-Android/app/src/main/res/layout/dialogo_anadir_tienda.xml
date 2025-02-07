@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFDEE6">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Añadir Tienda"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="8dp" />
+
+    <!-- Contenedor de ubicación y botón -->
+    <EditText
+        android:id="@+id/edit_nombre_anadir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nombre de la tienda" />
+
+    <EditText
+        android:id="@+id/edit_dueno_anadir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Dueño" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Campo para la ubicación escrita manualmente -->
+        <EditText
+            android:id="@+id/edit_ubicacion_anadir"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="Ubicación" />
+
+        <!-- Botón para seleccionar ubicación en el mapa -->
+        <Button
+            android:id="@+id/btn_seleccionar_mapa_anadir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#8B516C"
+            android:text="Seleccionar" />
+    </LinearLayout>
+
+    <!-- TextViews para latitud y longitud (no editables) -->
+    <TextView
+        android:id="@+id/tv_latitud_anadir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Latitud: " />
+
+    <TextView
+        android:id="@+id/tv_longitud_anadir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Longitud: " />
+
+    <!-- Campo para el nombre de la tienda -->
+
+    <!-- Campo para el dueño -->
+</LinearLayout>

@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
         android:backgroundTint="#8B516C"
-        android:text="Button"
+        android:text="Añadir"
         app:layout_constraintBottom_toTopOf="@+id/zapatos_listView"
         app:layout_constraintEnd_toEndOf="@+id/zapatos_listView"
         app:layout_constraintStart_toStartOf="@+id/zapatos_listView" />

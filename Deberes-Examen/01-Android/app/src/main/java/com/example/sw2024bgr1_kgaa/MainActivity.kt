@@ -72,6 +72,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        // Inicializar la base de datos en la primera actividad
+        EBaseDeDatos.tablaBD = BDHelper(this)
+
 
         val botonListView = findViewById<Button>(R.id.btn_ir_list_tiendas)
         botonListView

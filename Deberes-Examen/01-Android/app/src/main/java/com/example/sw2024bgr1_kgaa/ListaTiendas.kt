@@ -10,109 +10,86 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.snackbar.Snackbar
 
 class ListaTiendas : AppCompatActivity() {
-    val arreglo = BDTiendas.arregloTiendas
-    lateinit var adaptador: ArrayAdapter<Tienda> // Declaración global del adaptador
+    lateinit var adaptador: ArrayAdapter<Tienda>
+    lateinit var listaTiendas: MutableList<Tienda>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_lista_tiendas)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        // Inicializar el adaptador global
-        adaptador = ArrayAdapter(
-            this, // contexto
-            android.R.layout.simple_list_item_1, // XML que vamos a usar
-            arreglo
-        )
 
         val listView = findViewById<ListView>(R.id.lv_list_view)
-        listView.adapter = adaptador // Usa el adaptador global
-        adaptador.notifyDataSetChanged() // Actualiza la lista si es necesario
-
         val botonAnadirListView = findViewById<Button>(R.id.btn_anadir_list_view)
-        botonAnadirListView.setOnClickListener { anadirTienda(adaptador) }
 
-        registerForContextMenu(listView) // Registrar el menú contextual
+        // Obtener tiendas de la base de datos
+        listaTiendas = EBaseDeDatos.tablaBD?.obtenerTiendas()?.toMutableList() ?: mutableListOf()
+
+        // Configurar adaptador
+        adaptador = ArrayAdapter(this, android.R.layout.simple_list_item_1, listaTiendas)
+        listView.adapter = adaptador
+
+        // Botón para añadir tienda
+        botonAnadirListView.setOnClickListener { anadirTienda() }
+
+        // Registrar menú contextual
+        registerForContextMenu(listView)
     }
 
-
-    var posicionItemSeleccionado = -1 // VARIABLE GLOBAL
-    override fun onCreateContextMenu(
-        menu: ContextMenu?,
-        v: View?,
-        menuInfo: ContextMenu.ContextMenuInfo?
-    ){
+    var posicionItemSeleccionado = -1
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)
-        // llenamos opciones del menu
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu2, menu)
-        // obtener id
+        menuInflater.inflate(R.menu.menu2, menu)
         val info = menuInfo as AdapterView.AdapterContextMenuInfo
-        val posicion = info.position
-        posicionItemSeleccionado = posicion
+        posicionItemSeleccionado = info.position
     }
 
-    //09-01
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
+        return when (item.itemId) {
             R.id.mi_editar2 -> {
-                abrirDialogoEditar(posicionItemSeleccionado, adaptador) // Abrir diálogo para editar
+                abrirDialogoEditar(posicionItemSeleccionado)
                 true
             }
-            R.id.mi_eliminar2 ->{
-                mostrarSnackbar("${posicionItemSeleccionado}")
+            R.id.mi_eliminar2 -> {
                 abrirDialogoEliminar(posicionItemSeleccionado)
-                return true
+                true
             }
-            R.id.ver_zapatos -> { // Cambiar al ID correcto
-                irListaZapatos(posicionItemSeleccionado) // Ir a la lista de zapatos
+            R.id.ver_zapatos -> {
+                irListaZapatos(posicionItemSeleccionado)
                 true
             }
             else -> super.onContextItemSelected(item)
         }
     }
 
-    //Parte última
-    fun mostrarSnackbar(texto: String){
-        val snack = Snackbar.make(
-            findViewById(R.id.main),
-            texto,
-            Snackbar.LENGTH_INDEFINITE
-        )
-        snack.show()
+    fun mostrarSnackbar(texto: String) {
+        Snackbar.make(findViewById(R.id.main), texto, Snackbar.LENGTH_SHORT).show()
     }
 
-    //Diálogo de eliminar
     fun abrirDialogoEliminar(posicion: Int) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("¿Desea eliminar esta tienda?")
-        builder.setMessage("Esta acción no se puede deshacer.")
-        builder.setPositiveButton("Aceptar") { _, _ ->
-            eliminarTiendaDesdeActividad(posicion)
-        }
-        builder.setNegativeButton("Cancelar", null)
-        builder.show()
+        val tiendaAEliminar = listaTiendas[posicion]
+        AlertDialog.Builder(this)
+            .setTitle("¿Eliminar tienda?")
+            .setMessage("Esta acción no se puede deshacer.")
+            .setPositiveButton("Aceptar") { _, _ ->
+                val resultado = EBaseDeDatos.tablaBD?.eliminarTienda(tiendaAEliminar.id)
+                if (resultado == true) {
+                    listaTiendas.removeAt(posicion)
+                    adaptador.notifyDataSetChanged()
+                    mostrarSnackbar("Tienda eliminada")
+                } else {
+                    mostrarSnackbar("Error al eliminar")
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
-
-    //Dialogo de Edición
-    fun abrirDialogoEditar(posicion: Int, adaptador: ArrayAdapter<Tienda>) {
-        val tiendaAEditar = BDTiendas.arregloTiendas[posicion]
-
-        // Crear vista personalizada para el diálogo
+    fun abrirDialogoEditar(posicion: Int) {
+        val tiendaAEditar = listaTiendas[posicion]
         val vista = layoutInflater.inflate(R.layout.dialogo_editar_tienda, null)
         val editNombre = vista.findViewById<EditText>(R.id.edit_nombre)
         val editDueno = vista.findViewById<EditText>(R.id.edit_dueno)
@@ -123,92 +100,74 @@ class ListaTiendas : AppCompatActivity() {
         editDueno.setText(tiendaAEditar.dueno)
         editUbicacion.setText(tiendaAEditar.ubicacion)
 
-        // Crear el cuadro de diálogo
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Editar Tienda")
-        builder.setView(vista)
+        AlertDialog.Builder(this)
+            .setTitle("Editar Tienda")
+            .setView(vista)
+            .setPositiveButton("Guardar") { _, _ ->
+                val nuevoNombre = editNombre.text.toString()
+                val nuevoDueno = editDueno.text.toString()
+                val nuevaUbicacion = editUbicacion.text.toString()
 
-        // Botón "Aceptar" para guardar los cambios
-        builder.setPositiveButton("Aceptar") { _, _ ->
-            val nuevoNombre = editNombre.text.toString()
-            val nuevoDueno = editDueno.text.toString()
-            val nuevaUbicacion = editUbicacion.text.toString()
-
-            if (nuevoNombre.isNotEmpty() && nuevoDueno.isNotEmpty() && nuevaUbicacion.isNotEmpty()) {
-                // Actualizar datos de la tienda
-                tiendaAEditar.nombre = nuevoNombre
-                tiendaAEditar.dueno = nuevoDueno
-                tiendaAEditar.ubicacion = nuevaUbicacion
-
-                // Actualizar el adaptador
-                adaptador.notifyDataSetChanged()
-
-                Snackbar.make(
-                    findViewById(R.id.main),
-                    "Tienda '${tiendaAEditar.nombre}' actualizada correctamente",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            } else {
-                Snackbar.make(
-                    findViewById(R.id.main),
-                    "Todos los campos son obligatorios",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                if (nuevoNombre.isNotEmpty() && nuevoDueno.isNotEmpty() && nuevaUbicacion.isNotEmpty()) {
+                    val resultado = EBaseDeDatos.tablaBD?.actualizarTienda(
+                        tiendaAEditar.id, nuevoNombre, nuevoDueno, nuevaUbicacion
+                    )
+                    if (resultado == true) {
+                        tiendaAEditar.nombre = nuevoNombre
+                        tiendaAEditar.dueno = nuevoDueno
+                        tiendaAEditar.ubicacion = nuevaUbicacion
+                        adaptador.notifyDataSetChanged()
+                        mostrarSnackbar("Tienda actualizada")
+                    } else {
+                        mostrarSnackbar("Error al actualizar")
+                    }
+                } else {
+                    mostrarSnackbar("Todos los campos son obligatorios")
+                }
             }
-        }
-
-        // Botón "Cancelar" para cerrar el diálogo
-        builder.setNegativeButton("Cancelar", null)
-        builder.show()
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
+    fun anadirTienda() {
+        val vista = layoutInflater.inflate(R.layout.dialogo_editar_tienda, null)
+        val editNombre = vista.findViewById<EditText>(R.id.edit_nombre)
+        val editDueno = vista.findViewById<EditText>(R.id.edit_dueno)
+        val editUbicacion = vista.findViewById<EditText>(R.id.edit_ubicacion)
 
+        AlertDialog.Builder(this)
+            .setTitle("Añadir Tienda")
+            .setView(vista)
+            .setPositiveButton("Agregar") { _, _ ->
+                val nombre = editNombre.text.toString()
+                val dueno = editDueno.text.toString()
+                val ubicacion = editUbicacion.text.toString()
 
-    //MANIPULACION DE DATOS
-
-
-    fun anadirTienda(adaptador: ArrayAdapter<Tienda>){
-        arreglo.add(Tienda(8, "Tiendas del Sur", "Laura Fernández", "Av. Sur 456"))
-        adaptador.notifyDataSetChanged()
-    }
-
-    // Eliminar
-    fun eliminarTiendaDesdeActividad(posicion: Int) {
-        val tiendaEliminada = BDTiendas.eliminarTienda(posicion)
-        if (tiendaEliminada != null) {
-            // Actualizar el adaptador del ListView
-            val listView = findViewById<ListView>(R.id.lv_list_view)
-            val adaptador = listView.adapter as ArrayAdapter<Tienda>
-            adaptador.notifyDataSetChanged()
-
-            // Mostrar mensaje de confirmación
-            Snackbar.make(
-                findViewById(R.id.main),
-                "La tienda '${tiendaEliminada.nombre}' ha sido eliminada",
-                Snackbar.LENGTH_SHORT
-            ).show()
-        } else {
-            Snackbar.make(
-                findViewById(R.id.main),
-                "Error: No se pudo eliminar la tienda",
-                Snackbar.LENGTH_SHORT
-            ).show()
-        }
+                if (nombre.isNotEmpty() && dueno.isNotEmpty() && ubicacion.isNotEmpty()) {
+                    val resultado = EBaseDeDatos.tablaBD?.crearTienda(nombre, dueno, ubicacion)
+                    if (resultado == true) {
+                        listaTiendas = EBaseDeDatos.tablaBD?.obtenerTiendas()?.toMutableList() ?: mutableListOf()
+                        adaptador.clear()
+                        adaptador.addAll(listaTiendas)
+                        adaptador.notifyDataSetChanged()
+                        mostrarSnackbar("Tienda añadida")
+                    } else {
+                        mostrarSnackbar("Error al añadir")
+                    }
+                } else {
+                    mostrarSnackbar("Todos los campos son obligatorios")
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     fun irListaZapatos(posicion: Int) {
-        val tiendaSeleccionada = BDTiendas.arregloTiendas[posicion]
+        val tiendaSeleccionada = listaTiendas[posicion]
 
-        // Crear un Intent para abrir la actividad ListaZapatos
         val intent = Intent(this, ListaZapatos::class.java)
-
-        // Pasar datos de la tienda seleccionada
         intent.putExtra("tienda_id", tiendaSeleccionada.id)
         intent.putExtra("tienda_nombre", tiendaSeleccionada.nombre)
-
-        // Iniciar la actividad
         startActivity(intent)
     }
-
-
 }

@@ -17,7 +17,7 @@ class BBaseDatosMemoria {
 
 /////
 
-
+/*
 fun abrirDialogo(posicion: Int, adaptador: ArrayAdapter<Tienda>) {
     val builder = AlertDialog.Builder(this)
     builder.setTitle("¿Qué desea hacer?")
@@ -242,5 +242,5 @@ class BDZapatos {
     }
 }
 
-//
+ */
 

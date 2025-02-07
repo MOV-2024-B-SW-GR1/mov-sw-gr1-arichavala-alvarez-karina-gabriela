@@ -1,45 +1,26 @@
 package com.example.sw2024bgr1_kgaa
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-//
-
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import com.example.sw2024bgr1_kgaa.BDZapatos.Companion.anadirZapato
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-//
 
 class ListaZapatos : AppCompatActivity() {
-
-    private var arregloZapatos = mutableListOf<Zapato>()
-    private lateinit var adaptador: ArrayAdapter<Zapato>
-    private var posicionItemSeleccionado = -1
-    private var nombreTienda = ""
-    private var idTienda = -1
-
+    lateinit var adaptador: ArrayAdapter<Zapato>
+    lateinit var listaZapatos: MutableList<Zapato>
+    var idTienda: Int = -1
+    var nombreTienda: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_lista_zapatos)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        //
+
+        val listView = findViewById<ListView>(R.id.zapatos_listView)
+        val botonAnadirZapato = findViewById<Button>(R.id.btn_anadir_zapatos)
 
         // Recuperar datos de la tienda
         nombreTienda = intent.getStringExtra("tienda_nombre") ?: "Tienda desconocida"
@@ -49,28 +30,21 @@ class ListaZapatos : AppCompatActivity() {
         val editNombreTienda = findViewById<EditText>(R.id.id_nombre_tienda)
         editNombreTienda.setText(nombreTienda)
 
-        // Configurar la lista de zapatos
-        arregloZapatos = BDZapatos.obtenerZapatosPorTienda(idTienda)
-        adaptador = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            arregloZapatos
-        )
+        // Obtener zapatos desde la base de datos
+        listaZapatos = EBaseDeDatos.tablaBD?.obtenerZapatosPorTienda(idTienda)?.toMutableList() ?: mutableListOf()
 
-        val listView = findViewById<ListView>(R.id.zapatos_listView)
+        // Configurar adaptador
+        adaptador = ArrayAdapter(this, android.R.layout.simple_list_item_1, listaZapatos)
         listView.adapter = adaptador
-        adaptador.notifyDataSetChanged() // Actualiza la lista si es necesario
-        registerForContextMenu(listView) // Registrar menú contextual
 
-        // Botón para añadir un zapato
-        val botonAnadirZapato = findViewById<Button>(R.id.btn_anadir_zapatos)
-        botonAnadirZapato.setOnClickListener {
-            BDZapatos.anadirZapato() // Llama directamente a la función en BDZapatos
-            actualizarLista()
-        }
+        // Botón para añadir zapato
+        botonAnadirZapato.setOnClickListener { anadirZapato() }
 
-    } //finish on create
+        // Registrar menú contextual
+        registerForContextMenu(listView)
+    }
 
+    var posicionItemSeleccionado = -1
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)
         menuInflater.inflate(R.menu.menu1, menu)
@@ -93,31 +67,24 @@ class ListaZapatos : AppCompatActivity() {
     }
 
     private fun actualizarLista() {
-        arregloZapatos = BDZapatos.obtenerZapatosPorTienda(idTienda)
+        listaZapatos = EBaseDeDatos.tablaBD?.obtenerZapatosPorTienda(idTienda)?.toMutableList() ?: mutableListOf()
         adaptador.clear()
-        adaptador.addAll(arregloZapatos)
+        adaptador.addAll(listaZapatos)
         adaptador.notifyDataSetChanged()
     }
 
     private fun abrirDialogoEliminar(posicion: Int) {
-        val zapatoId = arregloZapatos[posicion].id
+        val zapatoAEliminar = listaZapatos[posicion]
         val builder = AlertDialog.Builder(this)
         builder.setTitle("¿Desea eliminar este zapato?")
         builder.setMessage("Esta acción no se puede deshacer.")
         builder.setPositiveButton("Aceptar") { _, _ ->
-            if (BDZapatos.eliminarZapato(zapatoId) != null) {
+            val resultado = EBaseDeDatos.tablaBD?.eliminarZapato(zapatoAEliminar.id)
+            if (resultado == true) {
                 actualizarLista()
-                Snackbar.make(
-                    findViewById(R.id.main),
-                    "Zapato eliminado correctamente",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                mostrarSnackbar("Zapato eliminado correctamente")
             } else {
-                Snackbar.make(
-                    findViewById(R.id.main),
-                    "Error al eliminar el zapato",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                mostrarSnackbar("Error al eliminar el zapato")
             }
         }
         builder.setNegativeButton("Cancelar", null)
@@ -125,15 +92,17 @@ class ListaZapatos : AppCompatActivity() {
     }
 
     private fun abrirDialogoEditar(posicion: Int) {
-        val zapatoAEditar = arregloZapatos[posicion]
+        val zapatoAEditar = listaZapatos[posicion]
         val vista = layoutInflater.inflate(R.layout.dialogo_editar_zapato, null)
         val editMarca = vista.findViewById<EditText>(R.id.edit_marca)
         val editTalla = vista.findViewById<EditText>(R.id.edit_talla)
+        val editColor = vista.findViewById<EditText>(R.id.edit_color)
         val editPrecio = vista.findViewById<EditText>(R.id.edit_precio)
 
         // Precargar datos actuales
         editMarca.setText(zapatoAEditar.marca)
         editTalla.setText(zapatoAEditar.talla.toString())
+        editColor.setText(zapatoAEditar.color)
         editPrecio.setText(zapatoAEditar.precio.toString())
 
         val builder = AlertDialog.Builder(this)
@@ -142,34 +111,60 @@ class ListaZapatos : AppCompatActivity() {
         builder.setPositiveButton("Aceptar") { _, _ ->
             val nuevaMarca = editMarca.text.toString()
             val nuevaTalla = editTalla.text.toString().toIntOrNull()
+            val nuevoColor = editColor.text.toString()
             val nuevoPrecio = editPrecio.text.toString().toDoubleOrNull()
 
-            if (!nuevaMarca.isEmpty() && nuevaTalla != null && nuevoPrecio != null) {
-                if (BDZapatos.editarZapato(zapatoAEditar.id, nuevaMarca, nuevaTalla, nuevoPrecio)) {
+            if (!nuevaMarca.isEmpty() && nuevaTalla != null && !nuevoColor.isEmpty() && nuevoPrecio != null) {
+                val resultado = EBaseDeDatos.tablaBD?.actualizarZapato(
+                    zapatoAEditar.id, nuevaMarca, nuevaTalla, nuevoColor, nuevoPrecio
+                )
+                if (resultado == true) {
                     actualizarLista()
-                    Snackbar.make(
-                        findViewById(R.id.main),
-                        "Zapato actualizado correctamente",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    mostrarSnackbar("Zapato actualizado correctamente")
                 } else {
-                    Snackbar.make(
-                        findViewById(R.id.main),
-                        "Error al actualizar el zapato",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    mostrarSnackbar("Error al actualizar el zapato")
                 }
             } else {
-                Snackbar.make(
-                    findViewById(R.id.main),
-                    "Todos los campos son obligatorios y deben tener valores válidos",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                mostrarSnackbar("Todos los campos son obligatorios y deben tener valores válidos")
             }
         }
         builder.setNegativeButton("Cancelar", null)
         builder.show()
     }
 
+    private fun anadirZapato() {
+        val vista = layoutInflater.inflate(R.layout.dialogo_editar_zapato, null)
+        val editMarca = vista.findViewById<EditText>(R.id.edit_marca)
+        val editTalla = vista.findViewById<EditText>(R.id.edit_talla)
+        val editColor = vista.findViewById<EditText>(R.id.edit_color)
+        val editPrecio = vista.findViewById<EditText>(R.id.edit_precio)
 
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Añadir Zapato")
+        builder.setView(vista)
+        builder.setPositiveButton("Agregar") { _, _ ->
+            val marca = editMarca.text.toString()
+            val talla = editTalla.text.toString().toIntOrNull()
+            val color = editColor.text.toString()
+            val precio = editPrecio.text.toString().toDoubleOrNull()
+
+            if (marca.isNotEmpty() && talla != null && color.isNotEmpty() && precio != null) {
+                val resultado = EBaseDeDatos.tablaBD?.crearZapato(marca, talla, color, precio, idTienda)
+                if (resultado == true) {
+                    actualizarLista()
+                    mostrarSnackbar("Zapato añadido")
+                } else {
+                    mostrarSnackbar("Error al añadir")
+                }
+            } else {
+                mostrarSnackbar("Todos los campos son obligatorios")
+            }
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
+    }
+
+    fun mostrarSnackbar(texto: String) {
+        Snackbar.make(findViewById(R.id.main), texto, Snackbar.LENGTH_SHORT).show()
+    }
 }

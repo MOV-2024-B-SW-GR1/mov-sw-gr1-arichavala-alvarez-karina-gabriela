@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="saludo">Pantalla portrait ingles</string>
+    <string name="saludo">Hola</string>
     <color name="saludo_color">#FFFFFF</color>
     <color name="background_color">#4CAF50</color>
 </resources>
