@@ -69,24 +69,8 @@ class ListaTiendas : AppCompatActivity() {
         Snackbar.make(findViewById(R.id.main), texto, Snackbar.LENGTH_SHORT).show()
     }
 
-    fun abrirDialogoEliminar(posicion: Int) {
-        val tiendaAEliminar = listaTiendas[posicion]
-        AlertDialog.Builder(this)
-            .setTitle("¿Eliminar tienda?")
-            .setMessage("Esta acción no se puede deshacer.")
-            .setPositiveButton("Aceptar") { _, _ ->
-                val resultado = EBaseDeDatos.tablaBD?.eliminarTienda(tiendaAEliminar.id)
-                if (resultado == true) {
-                    listaTiendas.removeAt(posicion)
-                    adaptador.notifyDataSetChanged()
-                    mostrarSnackbar("Tienda eliminada")
-                } else {
-                    mostrarSnackbar("Error al eliminar")
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
+
+    //1
 
     fun abrirDialogoEditar(posicion: Int) {
         val tiendaAEditar = listaTiendas[posicion]
@@ -129,11 +113,42 @@ class ListaTiendas : AppCompatActivity() {
             .show()
     }
 
+    //2
+    fun abrirDialogoEliminar(posicion: Int) {
+        val tiendaAEliminar = listaTiendas[posicion]
+        AlertDialog.Builder(this)
+            .setTitle("¿Eliminar tienda?")
+            .setMessage("Esta acción no se puede deshacer.")
+            .setPositiveButton("Aceptar") { _, _ ->
+                val resultado = EBaseDeDatos.tablaBD?.eliminarTienda(tiendaAEliminar.id)
+                if (resultado == true) {
+                    listaTiendas.removeAt(posicion)
+                    adaptador.notifyDataSetChanged()
+                    mostrarSnackbar("Tienda eliminada")
+                } else {
+                    mostrarSnackbar("Error al eliminar")
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    //3
+    fun irListaZapatos(posicion: Int) {
+        val tiendaSeleccionada = listaTiendas[posicion]
+
+        val intent = Intent(this, ListaZapatos::class.java)
+        intent.putExtra("tienda_id", tiendaSeleccionada.id)
+        intent.putExtra("tienda_nombre", tiendaSeleccionada.nombre)
+        startActivity(intent)
+    }
+
+    //Añadir
     fun anadirTienda() {
-        val vista = layoutInflater.inflate(R.layout.dialogo_editar_tienda, null)
-        val editNombre = vista.findViewById<EditText>(R.id.edit_nombre)
-        val editDueno = vista.findViewById<EditText>(R.id.edit_dueno)
-        val editUbicacion = vista.findViewById<EditText>(R.id.edit_ubicacion)
+        val vista = layoutInflater.inflate(R.layout.dialogo_anadir_tienda, null)
+        val editNombre = vista.findViewById<EditText>(R.id.anadir_nombre)
+        val editDueno = vista.findViewById<EditText>(R.id.anadir_dueno)
+        val editUbicacion = vista.findViewById<EditText>(R.id.anadir_ubicacion)
 
         AlertDialog.Builder(this)
             .setTitle("Añadir Tienda")
@@ -162,12 +177,5 @@ class ListaTiendas : AppCompatActivity() {
             .show()
     }
 
-    fun irListaZapatos(posicion: Int) {
-        val tiendaSeleccionada = listaTiendas[posicion]
 
-        val intent = Intent(this, ListaZapatos::class.java)
-        intent.putExtra("tienda_id", tiendaSeleccionada.id)
-        intent.putExtra("tienda_nombre", tiendaSeleccionada.nombre)
-        startActivity(intent)
-    }
 }

@@ -6,38 +6,51 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Título del formulario -->
     <TextView
         android:id="@+id/tv_titulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:gravity="center"
-        android:text="Editar Tienda"
+        android:text="Añadir Zapato"
         android:textSize="20sp"
         android:textStyle="bold" />
 
+    <!-- Campo para la marca del zapato -->
     <EditText
-        android:id="@+id/edit_nombre"
+        android:id="@+id/anadir_marca"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:hint="Nombre de la tienda"
+        android:layout_marginBottom="8dp"
+        android:hint="Marca"
         android:inputType="text" />
 
+    <!-- Campo para la talla del zapato -->
     <EditText
-        android:id="@+id/edit_dueno"
+        android:id="@+id/anadir_talla"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:hint="Dueño"
+        android:layout_marginBottom="8dp"
+        android:hint="Talla"
+        android:inputType="number" />
+
+    <!-- Campo para el color del zapato -->
+    <EditText
+        android:id="@+id/anadir_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:hint="Color"
         android:inputType="text" />
 
+    <!-- Campo para el precio del zapato -->
     <EditText
-        android:id="@+id/edit_ubicacion"
+        android:id="@+id/anadir_precio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:hint="Ubicación"
-        android:inputType="text" />
+        android:layout_marginBottom="8dp"
+        android:hint="Precio"
+        android:inputType="numberDecimal" />
 
 </LinearLayout>

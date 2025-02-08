@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#8B516C"
-        android:text="Crear"
+        android:text="Añadir"
         app:layout_constraintEnd_toEndOf="@+id/lv_list_view"
         app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="@+id/lv_list_view"

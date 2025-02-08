@@ -2,70 +2,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#FFDEE6"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FFDEE6">
+    android:padding="16dp">
 
-    <!-- Título -->
     <TextView
+        android:id="@+id/tv_titulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Añadir Tienda"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
-        android:paddingBottom="8dp" />
-
-    <!-- Contenedor de ubicación y botón -->
-    <EditText
-        android:id="@+id/edit_nombre_anadir"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Nombre de la tienda" />
+        android:text="Añadir Tienda"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/edit_dueno_anadir"
+        android:id="@+id/anadir_nombre"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Dueño" />
+        android:layout_marginBottom="12dp"
+        android:hint="Nombre de la tienda"
+        android:inputType="text" />
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/anadir_dueno"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_marginBottom="12dp"
+        android:hint="Dueño"
+        android:inputType="text" />
 
-        <!-- Campo para la ubicación escrita manualmente -->
-        <EditText
-            android:id="@+id/edit_ubicacion_anadir"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:hint="Ubicación" />
-
-        <!-- Botón para seleccionar ubicación en el mapa -->
-        <Button
-            android:id="@+id/btn_seleccionar_mapa_anadir"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#8B516C"
-            android:text="Seleccionar" />
-    </LinearLayout>
-
-    <!-- TextViews para latitud y longitud (no editables) -->
-    <TextView
-        android:id="@+id/tv_latitud_anadir"
+    <EditText
+        android:id="@+id/anadir_ubicacion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Latitud: " />
+        android:layout_marginBottom="16dp"
+        android:hint="Ubicación"
+        android:inputType="text" />
 
-    <TextView
-        android:id="@+id/tv_longitud_anadir"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Longitud: " />
-
-    <!-- Campo para el nombre de la tienda -->
-
-    <!-- Campo para el dueño -->
 </LinearLayout>

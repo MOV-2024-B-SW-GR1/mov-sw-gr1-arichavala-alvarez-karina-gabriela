@@ -66,6 +66,7 @@ class ListaZapatos : AppCompatActivity() {
         }
     }
 
+
     private fun actualizarLista() {
         listaZapatos = EBaseDeDatos.tablaBD?.obtenerZapatosPorTienda(idTienda)?.toMutableList() ?: mutableListOf()
         adaptador.clear()
@@ -73,24 +74,8 @@ class ListaZapatos : AppCompatActivity() {
         adaptador.notifyDataSetChanged()
     }
 
-    private fun abrirDialogoEliminar(posicion: Int) {
-        val zapatoAEliminar = listaZapatos[posicion]
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("¿Desea eliminar este zapato?")
-        builder.setMessage("Esta acción no se puede deshacer.")
-        builder.setPositiveButton("Aceptar") { _, _ ->
-            val resultado = EBaseDeDatos.tablaBD?.eliminarZapato(zapatoAEliminar.id)
-            if (resultado == true) {
-                actualizarLista()
-                mostrarSnackbar("Zapato eliminado correctamente")
-            } else {
-                mostrarSnackbar("Error al eliminar el zapato")
-            }
-        }
-        builder.setNegativeButton("Cancelar", null)
-        builder.show()
-    }
 
+    //1
     private fun abrirDialogoEditar(posicion: Int) {
         val zapatoAEditar = listaZapatos[posicion]
         val vista = layoutInflater.inflate(R.layout.dialogo_editar_zapato, null)
@@ -132,12 +117,32 @@ class ListaZapatos : AppCompatActivity() {
         builder.show()
     }
 
+    //2
+    private fun abrirDialogoEliminar(posicion: Int) {
+        val zapatoAEliminar = listaZapatos[posicion]
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("¿Desea eliminar este zapato?")
+        builder.setMessage("Esta acción no se puede deshacer.")
+        builder.setPositiveButton("Aceptar") { _, _ ->
+            val resultado = EBaseDeDatos.tablaBD?.eliminarZapato(zapatoAEliminar.id)
+            if (resultado == true) {
+                actualizarLista()
+                mostrarSnackbar("Zapato eliminado correctamente")
+            } else {
+                mostrarSnackbar("Error al eliminar el zapato")
+            }
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
+    }
+
+    //Añadir
     private fun anadirZapato() {
-        val vista = layoutInflater.inflate(R.layout.dialogo_editar_zapato, null)
-        val editMarca = vista.findViewById<EditText>(R.id.edit_marca)
-        val editTalla = vista.findViewById<EditText>(R.id.edit_talla)
-        val editColor = vista.findViewById<EditText>(R.id.edit_color)
-        val editPrecio = vista.findViewById<EditText>(R.id.edit_precio)
+        val vista = layoutInflater.inflate(R.layout.dialogo_anadir_zapato, null)
+        val editMarca = vista.findViewById<EditText>(R.id.anadir_marca)
+        val editTalla = vista.findViewById<EditText>(R.id.anadir_talla)
+        val editColor = vista.findViewById<EditText>(R.id.anadir_color)
+        val editPrecio = vista.findViewById<EditText>(R.id.anadir_precio)
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Añadir Zapato")
