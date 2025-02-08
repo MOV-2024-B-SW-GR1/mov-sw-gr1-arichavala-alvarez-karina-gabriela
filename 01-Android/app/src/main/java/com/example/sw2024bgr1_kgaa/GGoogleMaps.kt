@@ -27,6 +27,7 @@ class GGoogleMaps : AppCompatActivity() {
     private lateinit var mapa: GoogleMap
     val nombrePermisoFine = android.Manifest.permission.ACCESS_FINE_LOCATION
     val nombrePermisoCoarse = android.Manifest.permission.ACCESS_COARSE_LOCATION
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

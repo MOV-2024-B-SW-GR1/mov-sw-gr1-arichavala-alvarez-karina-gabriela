@@ -18,7 +18,8 @@ class BDHelper(contexto: Context?) : SQLiteOpenHelper(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
                 dueno TEXT NOT NULL,
-                ubicacion TEXT NOT NULL
+                ubicacion TEXT NOT NULL,
+                coordenadas TEXT
             ) 
         """.trimIndent()
         db?.execSQL(scriptCrearTablaTiendas)
@@ -46,17 +47,19 @@ class BDHelper(contexto: Context?) : SQLiteOpenHelper(
 
     // ---------------- CRUD PARA TIENDAS ----------------
 
-    fun crearTienda(nombre: String, dueno: String, ubicacion: String): Boolean {
+    fun crearTienda(nombre: String, dueno: String, ubicacion: String, coordenadas: String): Boolean {
         val db = writableDatabase
         val valores = ContentValues().apply {
             put("nombre", nombre)
             put("dueno", dueno)
             put("ubicacion", ubicacion)
+            put("coordenadas", coordenadas) // NUEVO CAMPO
         }
         val resultado = db.insert("Tiendas", null, valores)
         db.close()
         return resultado.toInt() != -1
     }
+
 
     fun eliminarTienda(id: Int): Boolean {
         val db = writableDatabase
@@ -65,17 +68,21 @@ class BDHelper(contexto: Context?) : SQLiteOpenHelper(
         return resultado != -1
     }
 
-    fun actualizarTienda(id: Int, nuevoNombre: String, nuevoDueno: String, nuevaUbicacion: String): Boolean {
+
+
+    fun actualizarTienda(id: Int, nuevoNombre: String, nuevoDueno: String, nuevaUbicacion: String, nuevasCoordenadas: String): Boolean {
         val db = writableDatabase
         val valores = ContentValues().apply {
             put("nombre", nuevoNombre)
             put("dueno", nuevoDueno)
             put("ubicacion", nuevaUbicacion)
+            put("coordenadas", nuevasCoordenadas) // NUEVO CAMPO
         }
         val resultado = db.update("Tiendas", valores, "id=?", arrayOf(id.toString()))
         db.close()
         return resultado != -1
     }
+
 
     fun consultarTiendaPorId(id: Int): Tienda? {
         val db = readableDatabase
@@ -86,7 +93,8 @@ class BDHelper(contexto: Context?) : SQLiteOpenHelper(
                 cursor.getInt(0), // id
                 cursor.getString(1), // nombre
                 cursor.getString(2), // dueño
-                cursor.getString(3)  // ubicación
+                cursor.getString(3), // ubicación
+                cursor.getString(4)  // NUEVO: coordenadas
             )
             cursor.close()
             db.close()
@@ -97,6 +105,7 @@ class BDHelper(contexto: Context?) : SQLiteOpenHelper(
             null
         }
     }
+
 
     fun obtenerTiendas(): List<Tienda> {
         val db = readableDatabase
@@ -109,7 +118,8 @@ class BDHelper(contexto: Context?) : SQLiteOpenHelper(
                     cursor.getInt(0),
                     cursor.getString(1),
                     cursor.getString(2),
-                    cursor.getString(3)
+                    cursor.getString(3),
+                    cursor.getString(4)  // NUEVO: coordenadas
                 )
                 listaTiendas.add(tienda)
             } while (cursor.moveToNext())
@@ -118,6 +128,7 @@ class BDHelper(contexto: Context?) : SQLiteOpenHelper(
         db.close()
         return listaTiendas
     }
+
 
     // ---------------- CRUD PARA ZAPATOS ----------------
 

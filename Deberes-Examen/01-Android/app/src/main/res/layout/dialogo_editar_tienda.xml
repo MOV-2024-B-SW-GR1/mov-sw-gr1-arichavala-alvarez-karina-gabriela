@@ -40,4 +40,12 @@
         android:hint="Ubicación"
         android:inputType="text" />
 
+    <EditText
+        android:id="@+id/edit_coordenadas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Coordenadas"
+        android:inputType="text" />
+
 </LinearLayout>

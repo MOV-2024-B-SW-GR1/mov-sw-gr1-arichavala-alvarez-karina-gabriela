@@ -40,7 +40,11 @@ class ListaTiendas : AppCompatActivity() {
     }
 
     var posicionItemSeleccionado = -1
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+    override fun onCreateContextMenu(
+        menu: ContextMenu?,
+        v: View?,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
         super.onCreateContextMenu(menu, v, menuInfo)
         menuInflater.inflate(R.menu.menu2, menu)
         val info = menuInfo as AdapterView.AdapterContextMenuInfo
@@ -53,14 +57,22 @@ class ListaTiendas : AppCompatActivity() {
                 abrirDialogoEditar(posicionItemSeleccionado)
                 true
             }
+
             R.id.mi_eliminar2 -> {
                 abrirDialogoEliminar(posicionItemSeleccionado)
                 true
             }
+
             R.id.ver_zapatos -> {
                 irListaZapatos(posicionItemSeleccionado)
                 true
             }
+
+            R.id.ver_ubicacion -> { // NUEVA OPCIÓN PARA ABRIR EL MAPA
+                verUbicacion(posicionItemSeleccionado)
+                true
+            }
+
             else -> super.onContextItemSelected(item)
         }
     }
@@ -78,11 +90,13 @@ class ListaTiendas : AppCompatActivity() {
         val editNombre = vista.findViewById<EditText>(R.id.edit_nombre)
         val editDueno = vista.findViewById<EditText>(R.id.edit_dueno)
         val editUbicacion = vista.findViewById<EditText>(R.id.edit_ubicacion)
+        val editCoordenadas = vista.findViewById<EditText>(R.id.edit_coordenadas) // NUEVO CAMPO
 
         // Precargar datos actuales
         editNombre.setText(tiendaAEditar.nombre)
         editDueno.setText(tiendaAEditar.dueno)
         editUbicacion.setText(tiendaAEditar.ubicacion)
+        editCoordenadas.setText(tiendaAEditar.coordenadas) // Precargar coordenadas
 
         AlertDialog.Builder(this)
             .setTitle("Editar Tienda")
@@ -91,15 +105,17 @@ class ListaTiendas : AppCompatActivity() {
                 val nuevoNombre = editNombre.text.toString()
                 val nuevoDueno = editDueno.text.toString()
                 val nuevaUbicacion = editUbicacion.text.toString()
+                val nuevasCoordenadas = editCoordenadas.text.toString() // Leer coordenadas
 
-                if (nuevoNombre.isNotEmpty() && nuevoDueno.isNotEmpty() && nuevaUbicacion.isNotEmpty()) {
+                if (nuevoNombre.isNotEmpty() && nuevoDueno.isNotEmpty() && nuevaUbicacion.isNotEmpty() && nuevasCoordenadas.isNotEmpty()) {
                     val resultado = EBaseDeDatos.tablaBD?.actualizarTienda(
-                        tiendaAEditar.id, nuevoNombre, nuevoDueno, nuevaUbicacion
+                        tiendaAEditar.id, nuevoNombre, nuevoDueno, nuevaUbicacion, nuevasCoordenadas
                     )
                     if (resultado == true) {
                         tiendaAEditar.nombre = nuevoNombre
                         tiendaAEditar.dueno = nuevoDueno
                         tiendaAEditar.ubicacion = nuevaUbicacion
+                        tiendaAEditar.coordenadas = nuevasCoordenadas
                         adaptador.notifyDataSetChanged()
                         mostrarSnackbar("Tienda actualizada")
                     } else {
@@ -112,6 +128,7 @@ class ListaTiendas : AppCompatActivity() {
             .setNegativeButton("Cancelar", null)
             .show()
     }
+
 
     //2
     fun abrirDialogoEliminar(posicion: Int) {
@@ -143,12 +160,25 @@ class ListaTiendas : AppCompatActivity() {
         startActivity(intent)
     }
 
+    //4
+    fun verUbicacion(posicion: Int) {
+        val tiendaSeleccionada = listaTiendas[posicion]
+
+        // Crear Intent para abrir el mapa y pasarle las coordenadas
+        val intent = Intent(this, MapaActivity::class.java)
+        intent.putExtra("latitud", tiendaSeleccionada.coordenadas?.split(",")?.get(0)) // Extraer latitud
+        intent.putExtra("longitud", tiendaSeleccionada.coordenadas?.split(",")?.get(1)) // Extraer longitud
+        startActivity(intent)
+    }
+
+
     //Añadir
     fun anadirTienda() {
         val vista = layoutInflater.inflate(R.layout.dialogo_anadir_tienda, null)
         val editNombre = vista.findViewById<EditText>(R.id.anadir_nombre)
         val editDueno = vista.findViewById<EditText>(R.id.anadir_dueno)
         val editUbicacion = vista.findViewById<EditText>(R.id.anadir_ubicacion)
+        val editCoordenadas = vista.findViewById<EditText>(R.id.anadir_coordenadas) // NUEVO CAMPO
 
         AlertDialog.Builder(this)
             .setTitle("Añadir Tienda")
@@ -157,11 +187,14 @@ class ListaTiendas : AppCompatActivity() {
                 val nombre = editNombre.text.toString()
                 val dueno = editDueno.text.toString()
                 val ubicacion = editUbicacion.text.toString()
+                val coordenadas = editCoordenadas.text.toString() // Leer coordenadas
 
-                if (nombre.isNotEmpty() && dueno.isNotEmpty() && ubicacion.isNotEmpty()) {
-                    val resultado = EBaseDeDatos.tablaBD?.crearTienda(nombre, dueno, ubicacion)
+                if (nombre.isNotEmpty() && dueno.isNotEmpty() && ubicacion.isNotEmpty() && coordenadas.isNotEmpty()) {
+                    val resultado =
+                        EBaseDeDatos.tablaBD?.crearTienda(nombre, dueno, ubicacion, coordenadas)
                     if (resultado == true) {
-                        listaTiendas = EBaseDeDatos.tablaBD?.obtenerTiendas()?.toMutableList() ?: mutableListOf()
+                        listaTiendas = EBaseDeDatos.tablaBD?.obtenerTiendas()?.toMutableList()
+                            ?: mutableListOf()
                         adaptador.clear()
                         adaptador.addAll(listaTiendas)
                         adaptador.notifyDataSetChanged()
@@ -176,6 +209,7 @@ class ListaTiendas : AppCompatActivity() {
             .setNegativeButton("Cancelar", null)
             .show()
     }
-
-
 }
+
+
+

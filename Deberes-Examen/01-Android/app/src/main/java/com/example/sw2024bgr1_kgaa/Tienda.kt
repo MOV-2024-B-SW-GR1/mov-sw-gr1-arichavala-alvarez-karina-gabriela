@@ -4,7 +4,9 @@ class Tienda(
     var id: Int,          // Cambiar `Int` por `String`
     var nombre: String,
     var dueno: String,
-    var ubicacion: String?
+    var ubicacion: String?,
+    var coordenadas: String?
+
 
 ) {
     override fun toString(): String {
